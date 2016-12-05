@@ -22,8 +22,8 @@
         win-down (some #(or (= #{"x"} %) (= #{"o"} %)) (apply map (partial conj #{}) board))
         win-diagonal (some
                       #(or (= #{"x"} %) (= #{"o"} %))
-                      [[(first (first board)) (second (second board)) (nth (nth board 2) 2)]
-                       [(first (nth board 2)) (second (second board)) (nth (first board) 2)]])]
+                      [#{(first (first board)) (second (second board)) (nth (nth board 2) 2)}
+                       #{(first (nth board 2)) (second (second board)) (nth (first board) 2)}])]
     (or win-across win-down win-diagonal)))
 
 (defn fibonacci []
