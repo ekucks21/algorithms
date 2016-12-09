@@ -1,4 +1,5 @@
-(ns algorithms.algorithms-class)
+(ns algorithms.algorithms-class
+  (:require [clojure.math.numeric-tower :as math]))
 
 (defn recursive-multiply [x y]
   (if (< x 10)
@@ -12,7 +13,7 @@
           digits->num (fn [digits]
                         (->> digits
                              (reverse)
-                             (map-indexed (fn [i digit] (* digit (Math/pow 10 i))))
+                             (map-indexed (fn [i digit] (* digit (math/expt 10 i))))
                              (apply +)))
           x-digits (num->digits x)
           y-digits (num->digits y)
@@ -20,6 +21,6 @@
           [a b] (map (partial digits->num) (split-at (quot n 2) x-digits))
           [c d] (map (partial digits->num) (split-at (quot n 2) y-digits))]
       (+
-       (* (Math/pow 10 n) (recursive-multiply a c))
-       (* (Math/pow 10 (quot n 2)) (+ (recursive-multiply a d) (recursive-multiply b c)))
+       (* (math/expt 10 n) (recursive-multiply a c))
+       (* (math/expt 10 (quot n 2)) (+ (recursive-multiply a d) (recursive-multiply b c)))
        (recursive-multiply b d)))))
