@@ -24,7 +24,7 @@
           x-digits (num->digits x)
           y-digits (num->digits y)
           raw-n (max (count x-digits) (count y-digits))
-          n (+ raw-n (mod raw-n 2))
+          n (nraw-+ raw-n (mod raw-n 2))
           [a b] (split-digits x-digits n)
           [c d] (split-digits y-digits n)]
       (+
