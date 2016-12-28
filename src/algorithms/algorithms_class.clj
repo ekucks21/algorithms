@@ -31,3 +31,13 @@
        (* (math/expt 10 n) (recursive-multiply a c))
        (* (math/expt 10 (/ n 2)) (+ (recursive-multiply a d) (recursive-multiply b c)))
        (recursive-multiply b d)))))
+
+(defn num-inversions [xs]
+  (let [xs-count (count xs)
+        count-split-inv (fn [xs])]
+    (if (= 1 xs-count)
+         0
+         (let [left-count (num-inversions (take (quot xs-count 2) xs))
+               right-count (num-inversions (drop (quot xs-count 2) xs))
+               split-count (count-split-inv xs)]))
+    xs-count))
