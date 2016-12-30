@@ -33,7 +33,23 @@
        (recursive-multiply b d)))))
 
 (defn num-inversions [xs]
-  (let [num-inversions-sort (fn [xs]
+  (let [count-split-inv (fn [left-sorted right-sorted]
+                          (take-while
+                           (iterate (fn [[[left-first & left-rest :as left-sorted]
+                                          [right-first & right-rest :as right-sorted]
+                                          sorted
+                                          count-inversions]]
+                                      (cond
+                                        (<= left-first right-first) [left-rest
+                                                                     right-sorted
+                                                                     (conj sorted left-first)
+                                                                     count-inversions]
+                                        [left-sorted
+                                         right-rest
+                                         (conj sorted right-first)
+                                         (+ count-inversions (count left-sorted))]))
+                                    left-sorted right-sorted [] 0)))
+        num-inversions-sort (fn [xs]
                               (let [xs-count (count xs)]
                                 (if (= 1 xs-count)
                                   {:count 0 :sorted xs}
@@ -49,7 +65,5 @@
                                          split-sorted :sorted}
                                         (count-split-inv left-sorted right-sorted)]
                                     {:count (+ left-count right-count split-count)
-                                     :sorted split-sorted}))))
-        count-split-inv (fn [left-sorted right-sorted]
-                          (iterate (fn [[left-sorted right-sorted sorted count]])))]
+                                     :sorted split-sorted}))))]
     (:count (num-inversions-sort xs))))
