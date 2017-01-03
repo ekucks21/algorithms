@@ -34,21 +34,22 @@
 
 (defn num-inversions [xs]
   (let [count-split-inv (fn [left-sorted right-sorted]
-                          (take-while
-                           (iterate (fn [[[left-first & left-rest :as left-sorted]
-                                          [right-first & right-rest :as right-sorted]
-                                          sorted
-                                          count-inversions]]
-                                      (cond
-                                        (<= left-first right-first) [left-rest
-                                                                     right-sorted
-                                                                     (conj sorted left-first)
-                                                                     count-inversions]
-                                        [left-sorted
-                                         right-rest
-                                         (conj sorted right-first)
-                                         (+ count-inversions (count left-sorted))]))
-                                    left-sorted right-sorted [] 0)))
+                          (let [total-count (+ (count left-sorted) (count right-sorted))]
+                            (first (filter (fn [_ _ sorted _] (= (count sorted) (total-count)))
+                                     (iterate (fn [[[left-first & left-rest :as left-sorted]
+                                                    [right-first & right-rest :as right-sorted]
+                                                    sorted
+                                                    count-inversions]]
+                                                (if (<= left-first right-first)
+                                                  [left-rest
+                                                   right-sorted
+                                                   (conj sorted left-first)
+                                                   count-inversions]
+                                                  [left-sorted
+                                                   right-rest
+                                                   (conj sorted right-first)
+                                                   (+ count-inversions (count left-sorted))]))
+                                              [left-sorted right-sorted [] 0])))))
         num-inversions-sort (fn [xs]
                               (let [xs-count (count xs)]
                                 (if (= 1 xs-count)
