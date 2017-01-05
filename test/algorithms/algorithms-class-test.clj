@@ -8,4 +8,4 @@
 
 (t/deftest num-inversions-test
   (t/is (= (sut/num-inversions [2 4 3 5 1]) 5))
-  (t/is (= (sut/num-inversions [1 3 2]) 2)))
+  (t/is (= (sut/num-inversions [1 3 2]) 1)))

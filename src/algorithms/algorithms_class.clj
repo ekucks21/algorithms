@@ -33,38 +33,38 @@
        (recursive-multiply b d)))))
 
 (defn num-inversions [xs]
-  (let [count-split-inv (fn [left-sorted right-sorted]
-                          (let [total-count (+ (count left-sorted) (count right-sorted))]
-                            (first (filter
-                                    (fn [[_ _ sorted _]] (= (count sorted) total-count))
-                                    (iterate (fn [[[left-first & left-rest :as left-sorted]
-                                                   [right-first & right-rest :as right-sorted]
-                                                   sorted
-                                                   count-inversions]]
-                                               (if (<= left-first right-first)
-                                                 [left-rest
-                                                  right-sorted
-                                                  (conj sorted left-first)
-                                                  count-inversions]
-                                                 [left-sorted
-                                                  right-rest
-                                                  (conj sorted right-first)
-                                                  (+ count-inversions (count left-sorted))]))
-                                             [left-sorted right-sorted [] 0])))))
-        num-inversions-sort (fn num-inversions-sort [xs]
-                              #dbg (let [xs-count (count xs)]
-                                (if (= 1 xs-count)
-                                  {:count 0 :sorted xs}
-                                  (let [{left-count :count
-                                         left-sorted :sorted}
-                                        (num-inversions-sort (take (quot xs-count 2) xs))
+  (let [count-split-inv
+        (fn [left-sorted right-sorted]
+               (let [total-count (+ (count left-sorted) (count right-sorted))]
+            (first
+             (filter
+              (fn [[_ _ sorted _]] (= (count sorted) total-count))
+              (iterate
+               (fn [[[left-first & left-rest :as left-sorted]
+                     [right-first & right-rest :as right-sorted]
+                     sorted
+                     count-inversions]]
+                 (cond
+                     (nil? left-first) [nil nil (into sorted right-sorted) count-inversions]
+                     (nil? right-first) [nil nil (into sorted left-sorted) count-inversions]
+                     (<= left-first right-first) [left-rest right-sorted (conj sorted left-first) count-inversions]
+                     (< right-first left-first) [left-sorted right-rest (conj sorted right-first) (+ count-inversions (count left-sorted))]))
+               [left-sorted right-sorted [] 0])))))
+        num-inversions-sort
+        (fn num-inversions-sort [xs]
+          (let [xs-count (count xs)]
+                 (if (= 1 xs-count)
+                   {:count 0 :sorted xs}
+                   (let [{left-count :count
+                          left-sorted :sorted}
+                         (num-inversions-sort (take (quot xs-count 2) xs))
 
-                                        {right-count :count
-                                         right-sorted :sorted}
-                                        (num-inversions-sort (drop (quot xs-count 2) xs))
+                         {right-count :count
+                          right-sorted :sorted}
+                         (num-inversions-sort (drop (quot xs-count 2) xs))
 
-                                        [_ _ split-sorted split-count]
-                                        (count-split-inv left-sorted right-sorted)]
-                                    {:count (+ left-count right-count split-count)
-                                     :sorted split-sorted}))))]
+                         [_ _ split-sorted split-count]
+                         (count-split-inv left-sorted right-sorted)]
+                     {:count (+ left-count right-count split-count)
+                      :sorted split-sorted}))))]
     (:count (num-inversions-sort xs))))
