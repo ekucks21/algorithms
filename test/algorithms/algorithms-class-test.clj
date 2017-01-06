@@ -1,6 +1,7 @@
 (ns algorithms.algorithms-class-test
   (:require [algorithms.algorithms-class :as sut]
-            [clojure.test :as t]))
+            [clojure.test :as t]
+            [clojure.java.io :as io]))
 
 (t/deftest recursive-multiplication-test
   (t/is (= (sut/recursive-multiply 25 29) 725N))
@@ -8,4 +9,10 @@
 
 (t/deftest num-inversions-test
   (t/is (= (sut/num-inversions [2 4 3 5 1]) 5))
-  (t/is (= (sut/num-inversions [1 3 2]) 1)))
+  (t/is (= (sut/num-inversions [1 3 2]) 1))
+  (t/is (= (sut/num-inversions (with-open [integersReader (io/reader
+                                                           (io/resource "IntegerArray.txt"))]
+                                 (doall (map
+                                   #(Integer/valueOf %)
+                                   (line-seq integersReader)))))
+           2407905288)))
