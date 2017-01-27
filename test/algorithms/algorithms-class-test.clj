@@ -16,3 +16,7 @@
                                    #(Integer/valueOf %)
                                    (line-seq integersReader)))))
            2407905288)))
+
+(t/deftest count-comparisons-test
+  (t/is (= (sut/comparison-count [2 4 3 5 1]) 6)
+        (= (sut/comparison-count [4 9 2 0 8 7]) 10)))

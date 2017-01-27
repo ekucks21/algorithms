@@ -68,3 +68,12 @@
                      {:count (+ left-count right-count split-count)
                       :sorted split-sorted}))))]
     (:count (num-inversions-sort xs))))
+
+(defn comparison-count [xs]
+  (let [partition (fn [[pivot & unpartitioned]]
+                    (let [steps (reductions (fn [[left right] x]
+                                              (if (< x pivot)
+                                                [(conj left x) right]
+                                                [left (conj right x)]))
+                                            [[] []] unpartitioned)]
+                      [(count steps) (last steps)]))]))
