@@ -75,5 +75,9 @@
                                               (if (< x pivot)
                                                 [(conj left x) right]
                                                 [left (conj right x)]))
-                                            [[] []] unpartitioned)]
-                      [(count steps) (last steps)]))]))
+                                            [[] []] unpartitioned)
+                          [left-sorted right-sorted] (last steps)]
+                      [(dec (count steps)) (last steps)]))]
+    (if (<= (count xs) 1)
+      [0 xs]
+      (let [[comp-count [left-]] (partition )]))))
