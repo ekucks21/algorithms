@@ -18,5 +18,10 @@
            2407905288)))
 
 (t/deftest count-comparisons-test
-  (t/is (= (sut/comparison-count [2 4 3 5 1]) 6)
-        (= (sut/comparison-count [4 9 2 0 8 7]) 10)))
+  (t/is (= (first (sut/comparison-count [2 4 3 5 1])) 6))
+  (t/is (= (first (sut/comparison-count [4 9 2 0 8 7])) 9))
+  (t/is (= (first (sut/comparison-count (with-open [integersReader (io/reader
+                                                               (io/resource "QuickSortUnsorted.txt"))]
+                                     (doall (map
+                                             #(Integer/valueOf %)
+                                             (line-seq integersReader)))))) 10)))

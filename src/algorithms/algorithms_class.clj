@@ -76,8 +76,11 @@
                                                 [(conj left x) right]
                                                 [left (conj right x)]))
                                             [[] []] unpartitioned)
-                          [left-sorted right-sorted] (last steps)]
-                      [(dec (count steps)) (last steps)]))]
+                          [left right] (last steps)]
+                      [(dec (count steps)) left pivot right]))]
     (if (<= (count xs) 1)
       [0 xs]
-      (let [[comp-count [left-]] (partition )]))))
+      (let [[comp-count left pivot right] (partition xs)
+            [left-comp-count left-sorted] (comparison-count left)
+            [right-comp-count right-sorted] (comparison-count right)]
+        [(+ comp-count left-comp-count right-comp-count) (into (conj left-sorted pivot) right-sorted)]))))
