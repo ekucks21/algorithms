@@ -69,18 +69,19 @@
                       :sorted split-sorted}))))]
     (:count (num-inversions-sort xs))))
 
-(defn comparison-count [xs]
-  (let [partition (fn [[pivot & unpartitioned]]
-                    (let [steps (reductions (fn [[left right] x]
-                                              (if (< x pivot)
-                                                [(conj left x) right]
-                                                [left (conj right x)]))
-                                            [[] []] unpartitioned)
-                          [left right] (last steps)]
-                      [(dec (count steps)) left pivot right]))]
-    (if (<= (count xs) 1)
-      [0 xs]
-      (let [[comp-count left pivot right] (partition xs)
-            [left-comp-count left-sorted] (comparison-count left)
-            [right-comp-count right-sorted] (comparison-count right)]
-        [(+ comp-count left-comp-count right-comp-count) (into (conj left-sorted pivot) right-sorted)]))))
+(defn comparison-count
+  ([xs] (comparison-count xs identity))
+  ([xs pivot-picker] (let [partition (fn [[pivot & unpartitioned]]
+                          (let [steps (reductions (fn [[left right] x]
+                                                    (if (< x pivot)
+                                                      [(conj left x) right]
+                                                      [left (conj right x)]))
+                                                  [[] []] unpartitioned)
+                                [left right] (last steps)]
+                            [(dec (count steps)) left pivot right]))]
+          (if (<= (count xs) 1)
+            [0 xs]
+            (let [[comp-count left pivot right] (partition (pivot-picker xs))
+                  [left-comp-count left-sorted] (comparison-count left)
+                  [right-comp-count right-sorted] (comparison-count right)]
+              [(+ comp-count left-comp-count right-comp-count) (into (conj left-sorted pivot) right-sorted)])))))
