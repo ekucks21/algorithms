@@ -25,9 +25,16 @@
             (line-seq integersReader)))))
 
 (t/deftest count-comparisons-test
-  (let [pivot-last (fn [xs] (concat [(last xs)] (butlast xs)))]
+  (let [pivot-last (fn [xs] (concat [(last xs)] (butlast xs)))
+        pivot-median-of-three (fn [xs]
+                                (let [pivot (second (sort [(first xs)
+                                                           (first (drop (quot (count xs) 2) xs))
+                                                           (last xs)]))]
+                                  (cons pivot (remove (partial = pivot) xs))))]
     (t/is (= (first (sut/comparison-count [2 4 3 5 1])) 6))
     (t/is (= (first (sut/comparison-count [4 9 2 0 8 7])) 9))
     (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted))) 157946))
     (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-last)) 9))
-    (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted))) 157946))))
+    (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted) pivot-last)) 165485))
+    (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-median-of-three)) 6))
+    (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted) pivot-median-of-three)) 151811))))
