@@ -31,8 +31,9 @@
                                                            (first (drop (quot (count xs) 2) xs))
                                                            (last xs)]))]
                                   (cons pivot (remove (partial = pivot) xs))))]
-    (t/is (= (first (sut/comparison-count [2 4 3 5 1])) 6))
+    (t/is (= (sut/comparison-count [2 4 3 5 1]) [6 [1 2 3 4 5]]))
     (t/is (= (first (sut/comparison-count [4 9 2 0 8 7])) 9))
+    (t/is (= (first (sut/comparison-count [4 9 2 0 8 7 1 6])) 13))
     (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted))) 157946))
     (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-last)) 9))
     (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted) pivot-last)) 165485))

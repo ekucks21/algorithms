@@ -74,8 +74,10 @@
   ([xs pivot-picker] (let [partition (fn [[pivot & unpartitioned]]
                           (let [steps (reductions (fn [[left right] x]
                                                     (if (< x pivot)
-                                                      [(conj left x) right]
-                                                      [left (conj right x)]))
+                                                      [(conj left x)
+                                                       (conj (if-let ) (vec (rest right)) (first right))]
+                                                      [left
+                                                       (conj right x)]))
                                                   [[] []] unpartitioned)
                                 [left right] (last steps)]
                             [(dec (count steps)) left pivot right]))]
