@@ -72,15 +72,18 @@
 (defn comparison-count
   ([xs] (comparison-count xs identity))
   ([xs pivot-picker] (let [partition (fn [[pivot & unpartitioned]]
-                          (let [steps (reductions (fn [[left right] x]
-                                                    (if (< x pivot)
-                                                      [(conj left x)
-                                                       (conj (if-let ) (vec (rest right)) (first right))]
-                                                      [left
-                                                       (conj right x)]))
-                                                  [[] []] unpartitioned)
-                                [left right] (last steps)]
-                            [(dec (count steps)) left pivot right]))]
+                                       (let [[left right]
+                                             (reduce
+                                              (fn [[left right] x]
+                                                (if (< x pivot)
+                                                  [(conj left x)
+                                                   (if (first right)
+                                                     (conj (vec (rest right)) (first right))
+                                                     right)]
+                                                  [left
+                                                   (conj right x)]))
+                                              [[] []] unpartitioned)]
+                                         [(count unpartitioned) left pivot right]))]
           (if (<= (count xs) 1)
             [0 xs]
             (let [[comp-count left pivot right] (partition (pivot-picker xs))
