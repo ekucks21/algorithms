@@ -17,9 +17,9 @@
                                    (line-seq integersReader)))))
            2407905288)))
 
-(defn get-quick-sort-unsorted []
+(defn get-ints [file-name]
   (with-open [integersReader (io/reader
-                              (io/resource "QuickSortUnsorted.txt"))]
+                              (io/resource file-name))]
     (doall (map
             #(Integer/valueOf %)
             (line-seq integersReader)))))
@@ -35,10 +35,11 @@
     (t/is (= (first (sut/comparison-count [4 9 2 0 8 7])) 9))
     (t/is (= (first (sut/comparison-count [4 9 2 0 8 7 1 6])) 14))
     (t/is (= (first (sut/comparison-count [3 9 8 4 6 10 2 5 7 1])) 25))
-    (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted))) 163145))
+    (t/is (= (first (sut/comparison-count (get-ints "100.txt"))) 615))
+    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt"))) 163145))
     (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-last)) 9))
-    (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted) pivot-last)) 149789))
+    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-last)) 149789))
     (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-median-of-three)) 7))
-    (t/is (= (first (sut/comparison-count (get-quick-sort-unsorted) pivot-median-of-three)) 142758))))
+    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-median-of-three)) 142758))))
 
 ;; first pivot is not 163145

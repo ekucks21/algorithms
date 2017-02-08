@@ -87,6 +87,6 @@
           (if (<= (count xs) 1)
             [0 xs]
             (let [[comp-count left pivot right] (partition (pivot-picker xs))
-                  [left-comp-count left-sorted] (comparison-count left)
-                  [right-comp-count right-sorted] (comparison-count right)]
+                  [left-comp-count left-sorted] (comparison-count left pivot-picker)
+                  [right-comp-count right-sorted] (comparison-count right pivot-picker)]
               [(+ comp-count left-comp-count right-comp-count) (into (conj left-sorted pivot) right-sorted)])))))
