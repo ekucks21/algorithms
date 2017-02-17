@@ -25,21 +25,29 @@
             (line-seq integersReader)))))
 
 (t/deftest count-comparisons-test
-  (let [pivot-last (fn [xs] (concat [(last xs)] (butlast xs)))
+  (let [pivot-last (fn [xs] (conj (vec (cons (last xs) (rest (butlast xs)))) (first xs)))
         pivot-median-of-three (fn [xs]
-                                (let [pivot (second (sort [(first xs)
-                                                           (first (drop (quot (count xs) 2) xs))
-                                                           (last xs)]))]
-                                  (cons pivot (remove (partial = pivot) xs))))]
+                                (let [indexed-xs (vec (map-indexed vector xs))
+                                      pivot (second
+                                             (sort #(compare (second %1) (second %2))
+                                                   [(first indexed-xs)
+                                                    (if (odd? (count indexed-xs))
+                                                      (indexed-xs (quot (count indexed-xs) 2))
+                                                      (indexed-xs (dec (quot (count indexed-xs) 2))))
+                                                    (last indexed-xs)]))]
+                                  ;; (cons pivot (remove (partial = pivot) xs))
+                                  (assoc xs 0 (second pivot) (first pivot) (first xs))
+                                  ))]
     (t/is (= (sut/comparison-count [2 4 3 5 1]) [7 [1 2 3 4 5]]))
     (t/is (= (first (sut/comparison-count [4 9 2 0 8 7])) 9))
     (t/is (= (first (sut/comparison-count [4 9 2 0 8 7 1 6])) 13))
     (t/is (= (first (sut/comparison-count [3 9 8 4 6 10 2 5 7 1])) 25))
     (t/is (= (first (sut/comparison-count (get-ints "100.txt"))) 615))
     (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt"))) 162085))
-    (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-last)) 10))
-    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-last)) 158050 ))
+    (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-last)) 9))
+    (t/is (= (first (sut/comparison-count (get-ints "100.txt") pivot-last)) 587))
+    (t/is (= (first (sut/comparison-count (get-ints "100.txt") pivot-median-of-three)) 518))
+    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-last)) 164123))
     (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-median-of-three)) 6))
-    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-median-of-three)) 131834))))
-
-;; first pivot is not 163145
+    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-median-of-three)) 138382))
+    ))
