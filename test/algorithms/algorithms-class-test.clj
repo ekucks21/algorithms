@@ -1,6 +1,8 @@
 (ns algorithms.algorithms-class-test
   (:require [algorithms.algorithms-class :as sut]
-            [clojure.test :as t]
+            [clojure
+             [string :as s]
+             [test :as t]]
             [clojure.java.io :as io]))
 
 (t/deftest recursive-multiplication-test
@@ -49,5 +51,11 @@
     (t/is (= (first (sut/comparison-count (get-ints "100.txt") pivot-median-of-three)) 518))
     (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-last)) 164123))
     (t/is (= (first (sut/comparison-count [2 4 3 5 1] pivot-median-of-three)) 6))
-    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-median-of-three)) 138382))
-    ))
+    (t/is (= (first (sut/comparison-count (get-ints "QuickSortUnsorted.txt") pivot-median-of-three)) 138382))))
+
+(defn get-graph [file-name]
+  (with-open [r (io/reader (io/resource file-name))]
+    (doall (apply hash-map (map (comp (s/split )) (line-seq r))))))
+
+(t/deftest min-cut-test
+  (t/is (= (sut/min-cut (get-graph "kargerMinCut.txt")) 5)))

@@ -106,3 +106,6 @@
              [right-comp-count right-sorted] (comparison-count right pivot-picker)]
          [(+ comp-count left-comp-count right-comp-count)
           (into (conj left-sorted pivot) right-sorted)])))))
+
+(defn min-cut [g]
+  )
