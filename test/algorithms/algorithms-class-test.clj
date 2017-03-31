@@ -55,7 +55,11 @@
 
 (defn get-graph [file-name]
   (with-open [r (io/reader (io/resource file-name))]
-    (doall (apply hash-map (map (comp (s/split )) (line-seq r))))))
+    (let [ints (map #(map
+                      (fn [s] (Integer/parseInt s))
+                      (s/split % #"\s+")) (line-seq r))
+          key-vals (apply concat (map (fn [[vertice & adjacent]] [vertice adjacent]) ints))]
+      (apply hash-map key-vals))))
 
 (t/deftest min-cut-test
   (t/is (= (sut/min-cut (get-graph "kargerMinCut.txt")) 5)))
