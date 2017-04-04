@@ -108,4 +108,6 @@
           (into (conj left-sorted pivot) right-sorted)])))))
 
 (defn min-cut [g]
-  )
+  (let [n (count g)
+        random-contract-min-cut (fn [g] (if (= 2 (count g))))]
+    (min (repeatedly (* (* n n) (Math/log n)) #(random-contract-min-cut g)))))
