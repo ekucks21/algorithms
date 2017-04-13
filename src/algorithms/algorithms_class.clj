@@ -109,5 +109,13 @@
 
 (defn min-cut [g]
   (let [n (count g)
-        random-contract-min-cut (fn [g] (if (= 2 (count g))))]
+        edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))
+        random-contract (fn [g]
+                          (let [[v1 v2 :as edge-to-contract] (repeatedly 2 (inc (rand-int n)))]
+                            (reduce-kv
+                             #(assoc %1 %2 ()) {} (dissoc g v1))))
+        random-contract-min-cut (fn random-contract-min-cut [g]
+                                  (if (= 2 (count g))
+                                    g
+                                    (random-contract-min-cut (random-contract g))))]
     (min (repeatedly (* (* n n) (Math/log n)) #(random-contract-min-cut g)))))
