@@ -111,11 +111,26 @@
   (let [n (count g)
         edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))
         random-contract (fn [g]
-                          (let [[v1 v2 :as edge-to-contract] (repeatedly 2 (inc (rand-int n)))]
+                          (let [[vertex-to-remove
+                                 contracted-vertex
+                                 :as edge-to-contract] (repeatedly 2 (inc (rand-int n)))]
                             (reduce-kv
-                             #(assoc %1 %2 ()) {} (dissoc g v1))))
+                             (fn [g vertex adjacent-vertices]
+                               (let [contracted-adjacent-vertices
+                                     (if (= vertex vertex-to-remove)
+                                       (vec (remove
+                                             (partial = vertex-to-remove)
+                                             adjacent-vertices))
+                                       (map
+                                        (fn [adjacent-vertex]
+                                          (if (= adjacent-vertex vertex-to-remove)
+                                            contracted-vertex
+                                            adjacent-vertex)) adjacent-vertices))]
+                                 (assoc g vertex contracted-adjacent-vertices)))
+                             {} (dissoc g vertex-to-remove))))
         random-contract-min-cut (fn random-contract-min-cut [g]
                                   (if (= 2 (count g))
                                     g
-                                    (random-contract-min-cut (random-contract g))))]
+                                    (random-contract-min-cut (random-contract g))))
+        (iterate )]
     (min (repeatedly (* (* n n) (Math/log n)) #(random-contract-min-cut g)))))
