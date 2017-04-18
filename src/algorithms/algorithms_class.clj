@@ -131,8 +131,8 @@
                                  (assoc g vertex contracted-adjacent-vertices)))
                              {} (dissoc g vertex-to-remove))))
         random-contract-min-cut  (fn random-contract-min-cut [g]
-                                   #dbg ^{:break/when (= 100 (count g))}
-                                   (if (= 2 (count g))
-                                     g
-                                     (random-contract-min-cut (random-contract g))))]
+                                   (loop [g g]
+                                     (if (= 2 (count g))
+                                       g
+                                       (recur (random-contract g)))))]
     (min (repeatedly (* (* n n) (Math/log n)) #(random-contract-min-cut g)))))
