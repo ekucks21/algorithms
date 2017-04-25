@@ -112,19 +112,17 @@
         [vertex-to-remove
          contracted-vertex
          :as edge-to-contract]
-        (repeatedly 2 #(inc (rand-int num-vertices)))]
+        (map (vec (keys g)) (repeatedly 2 #(rand-int num-vertices)))]
     (reduce-kv
      (fn [g vertex adjacent-vertices]
        (let [contracted-adjacent-vertices
              (if (= vertex vertex-to-remove)
-               (vec (remove
-                     (partial = vertex-to-remove)
-                     adjacent-vertices))
-               (map
-                (fn [adjacent-vertex]
-                  (if (= adjacent-vertex vertex-to-remove)
-                    contracted-vertex
-                    adjacent-vertex)) adjacent-vertices))]
+               (vec (remove (partial = vertex-to-remove) adjacent-vertices))
+               (map (fn [adjacent-vertex]
+                      (if (= adjacent-vertex vertex-to-remove)
+                        contracted-vertex
+                        adjacent-vertex))
+                    adjacent-vertices))]
          (assoc g vertex contracted-adjacent-vertices)))
      {} (dissoc g vertex-to-remove))))
 
@@ -136,5 +134,6 @@
 
 (defn min-cut [g]
   (let [n (count g)
+        counter (atom)
         edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))]
-    (min (repeatedly (* (* n n) (Math/log n)) #(random-contract-min-cut g)))))
+    (apply min (repeatedly (* (* n n) (Math/log n)) #(count (first (vals (random-contract-min-cut g))))))))
