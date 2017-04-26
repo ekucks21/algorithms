@@ -134,6 +134,9 @@
 
 (defn min-cut [g]
   (let [n (count g)
-        counter (atom)
+        counter (atom 0)
         edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))]
-    (apply min (repeatedly (* (* n n) (Math/log n)) #(count (first (vals (random-contract-min-cut g))))))))
+    (apply min (repeatedly (* (* n n) (Math/log n))
+                           #(do
+                              (println (swap! counter inc))
+                              (count (first (vals (random-contract-min-cut g)))))))))
