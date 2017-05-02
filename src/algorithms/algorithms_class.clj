@@ -116,9 +116,10 @@
     (as-> g contracted-g
       (reduce #(update %1 %2 (partial replace {vertex-to-remove contracted-vertex}))
               contracted-g (contracted-g vertex-to-remove))
-      (update contracted-g contracted-vertex
-              #(vec (remove (partial = contracted-vertex) %)))
-      (dissoc contracted-g vertex-to-remove))))
+      ;; (update contracted-g contracted-vertex
+      ;;         #(vec (remove (partial = contracted-vertex) %)))
+      (dissoc contracted-g vertex-to-remove)
+      (do (println "contraction " contracted-g) contracted-g))))
 
 (defn random-contract-min-cut [g]
   (loop [g g]
@@ -130,7 +131,14 @@
   (let [n (count g)
         counter (atom 0)
         edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))]
-    (apply min (repeatedly (* (* n n) (Math/log n))
-                           #(do
-                              (println (swap! counter inc))
-                              (count (first (vals (random-contract-min-cut g)))))))))
+    (apply min (repeatedly ;; (* (* n n) (Math/log n))
+                1
+                #(do
+                   (println (swap! counter inc))
+                   (let [contracted-g (random-contract-min-cut g)
+                         a-min-cut (count (first (vals contracted-g)))]
+                     (do
+                       (println "min-cut " a-min-cut)
+                       (println "contracted-g " contracted-g)
+                       a-min-cut)
+                     ))))))
