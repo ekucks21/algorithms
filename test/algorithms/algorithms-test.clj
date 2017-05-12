@@ -58,7 +58,12 @@
     (let [ints (map #(map
                       (fn [s] (Integer/parseInt s))
                       (s/split % #"\s+")) (line-seq r))
-          key-vals (apply concat (map (fn [[vertice & adjacent]] [vertice adjacent]) ints))]
+          key-vals (apply concat
+                          (map (fn [[vertice & adjacent]]
+                                 [vertice
+                                  (apply hash-map
+                                         (interleave adjacent (repeat (count adjacent) 1)))])
+                               ints))]
       (apply hash-map key-vals))))
 
 (t/deftest min-cut-test
