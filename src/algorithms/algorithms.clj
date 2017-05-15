@@ -1,5 +1,7 @@
 (ns algorithms.algorithms-class
-  (:require [clojure.math.numeric-tower :as math]))
+  (:require [clojure.math.numeric-tower :as math]
+            [clojure.string :as s]
+            [clojure.set :as set]))
 
 (defn recursive-multiply [x y]
   (if (and (< x 10) (< y 10))
@@ -115,7 +117,7 @@
         (map (vec (keys g)) (take 2 (distinct (repeatedly #(rand-int num-vertices)))))
         adjacent-to-removed (g vertex-to-remove)]
     (as-> g contracted-g
-      (reduce #(update %1 %2 (partial replace {vertex-to-remove contracted-vertex}))
+      (reduce #(update-in %1 %2 #(set/rename-keys % {vertex-to-remove contracted-vertex}))
               contracted-g adjacent-to-removed)
       (update contracted-g contracted-vertex into adjacent-to-removed)
       (update contracted-g contracted-vertex
