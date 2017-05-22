@@ -111,16 +111,15 @@
 
 (defn random-contract [g]
   (let [num-vertices (count g)
-        [vertex-to-remove
-         contracted-vertex
-         :as edge-to-contract]
-        (map (vec (keys g)) (take 2 (distinct (repeatedly #(rand-int num-vertices)))))
+        vertex-to-remove ((vec (keys g)) (rand-int num-vertices))
         adjacent-to-removed (g vertex-to-remove)
+        contracted-vertex ((vec (keys adjacent-to-removed))
+                           (rand-int (count adjacent-to-removed)))
         contract-adjacent (fn [adjacent]
                             (merge-with +
                                         (dissoc adjacent vertex-to-remove)
                                         {contracted-vertex (adjacent vertex-to-remove)}))]
-    #break (-> (reduce #(update %1 %2 contract-adjacent) g (keys adjacent-to-removed))
+    (-> (reduce #(update %1 %2 contract-adjacent) g (keys adjacent-to-removed))
                (update contracted-vertex (partial merge-with +) adjacent-to-removed)
                (update contracted-vertex dissoc contracted-vertex)
                (dissoc vertex-to-remove))))
