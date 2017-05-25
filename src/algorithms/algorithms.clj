@@ -109,20 +109,23 @@
          [(+ comp-count left-comp-count right-comp-count)
           (into (conj left-sorted pivot) right-sorted)])))))
 
-(defn random-contract [g]
-  (let [num-vertices (count g)
-        vertex-to-remove ((vec (keys g)) (rand-int num-vertices))
-        adjacent-to-removed (g vertex-to-remove)
-        contracted-vertex ((vec (keys adjacent-to-removed))
-                           (rand-int (count adjacent-to-removed)))
-        contract-adjacent (fn [adjacent]
-                            (merge-with +
-                                        (dissoc adjacent vertex-to-remove)
-                                        {contracted-vertex (adjacent vertex-to-remove)}))]
-    (-> (reduce #(update %1 %2 contract-adjacent) g (keys adjacent-to-removed))
-               (update contracted-vertex (partial merge-with +) adjacent-to-removed)
-               (update contracted-vertex dissoc contracted-vertex)
-               (dissoc vertex-to-remove))))
+;; (defn random-contract [g]
+;;   (let [num-vertices (count g)
+;;         vertex-to-remove ((vec (keys g)) (rand-int num-vertices))
+;;         adjacent-to-removed (g vertex-to-remove)
+;;         contracted-vertex ((vec (keys adjacent-to-removed))
+;;                            (rand-int (count adjacent-to-removed)))
+;;         contract-adjacent (fn [adjacent]
+;;                             (merge-with +
+;;                                         (dissoc adjacent vertex-to-remove)
+;;                                         {contracted-vertex (adjacent vertex-to-remove)}))]
+;;     (-> (reduce #(update %1 %2 contract-adjacent) g (keys adjacent-to-removed))
+;;                (update contracted-vertex (partial merge-with +) adjacent-to-removed)
+;;                (update contracted-vertex dissoc contracted-vertex)
+;;                (dissoc vertex-to-remove))))
+
+(defn find [subsets i]
+  ())
 
 (defn random-contract-min-cut [g]
   (loop [g g]

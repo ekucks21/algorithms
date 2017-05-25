@@ -68,3 +68,6 @@
 
 (t/deftest min-cut-test
   (t/is (= (sut/min-cut (get-graph "kargerMinCut.txt")) 5)))
+
+(t/deftest find
+  (t/is (= 2 (sut/find []))))
