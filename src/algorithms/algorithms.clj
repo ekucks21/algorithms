@@ -125,7 +125,10 @@
 ;;                (dissoc vertex-to-remove))))
 
 (defn find [subsets i]
-  ())
+  (let [[root :as parents] (rseq (into [] (comp
+                    (partition 2 1)
+                    (take-while (partial apply not=)))
+                                       (iterate #((subsets i) "parent"))))]))
 
 (defn random-contract-min-cut [g]
   (loop [g g]
