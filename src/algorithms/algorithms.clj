@@ -125,16 +125,21 @@
 ;;                (dissoc vertex-to-remove))))
 
 (defn find [subsets i]
-  (let [[root :as parents] (rseq (into [] (comp
-                    (partition 2 1)
-                    (take-while (partial apply not=)))
-                                       (iterate #((subsets i) "parent"))))]))
+  (let [[root :as parents] (rseq (cons i (into [] (comp
+                                                   (partition 2 1)
+                                                   (take-while (partial apply not=))
+                                                   (map second))
+                                               (iterate #((subsets i) "parent") i))))
+        compressed-subsets (reduce #(update-in %1 [%2 "parent"] (identity root))
+                                   subsets parents)]
+    [compressed-subsets root]))
 
 (defn random-contract-min-cut [g]
   (loop [g g]
     (if (= 2 (count g))
       g
-      (recur (random-contract g)))))
+      ;; (recur (random-contract g))
+      )))
 
 (defn min-cut [g]
   (let [n (count g)
