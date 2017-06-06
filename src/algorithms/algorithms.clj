@@ -124,12 +124,13 @@
 ;;                (update contracted-vertex dissoc contracted-vertex)
 ;;                (dissoc vertex-to-remove))))
 
-(defn find [subsets i]
-  (let [[root :as parents] (rseq (cons i (into [] (comp
-                                                   (partition 2 1)
-                                                   (take-while (partial apply not=))
-                                                   (map second))
-                                               (iterate #((subsets i) "parent") i))))
+ (defn find [subsets i]
+  (let [[root :as parents] (rseq
+                            (cons i
+                                  (into [] (comp
+                                            (take-while (partial apply not=))
+                                            (map second))
+                                        (partition 2 1 (iterate #((subsets i) "parent") i)))))
         compressed-subsets (reduce #(update-in %1 [%2 "parent"] (identity root))
                                    subsets parents)]
     [compressed-subsets root]))
