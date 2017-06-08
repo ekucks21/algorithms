@@ -124,14 +124,26 @@
 ;;                (update contracted-vertex dissoc contracted-vertex)
 ;;                (dissoc vertex-to-remove))))
 
- (defn find [subsets i]
+(defn union [subsets x y]
+  (let [x-root (find subsets x)
+        y-root (find subsets y)
+        x-rank (get-in subsets [x-root "rank"])
+        y-rank (get-in subsets [y-root "rank"])]
+    (condp #(%1 %2 y-rank) x-rank 
+      < (assoc-in subsets [x-root "parent"] y-root)
+      > (assoc-in subsets [y-root "parent"] x-root)
+      (-> subsets
+          (assoc-in [x-root "parent"] y-root)
+          (update-in [x-root "rank"] inc)))))
+
+(defn find-root [subsets i]
   (let [[root :as parents] (rseq
-                            (cons i
-                                  (into [] (comp
-                                            (take-while (partial apply not=))
-                                            (map second))
-                                        (partition 2 1 (iterate #((subsets i) "parent") i)))))
-        compressed-subsets (reduce #(update-in %1 [%2 "parent"] (identity root))
+                            (into [] (cons i
+                                           (into [] (comp
+                                                     (take-while (partial apply not=))
+                                                     (map second))
+                                                 (partition 2 1 (iterate #((subsets %) "parent") i))))))
+        compressed-subsets (reduce #(update-in %1 [%2 "parent"] (fn [parent] root))
                                    subsets parents)]
     [compressed-subsets root]))
 
