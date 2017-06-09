@@ -125,8 +125,8 @@
 ;;                (dissoc vertex-to-remove))))
 
 (defn union [subsets x y]
-  (let [x-root (find subsets x)
-        y-root (find subsets y)
+  (let [x-root (find-root subsets x)
+        y-root (find-root subsets y)
         x-rank (get-in subsets [x-root "rank"])
         y-rank (get-in subsets [y-root "rank"])]
     (condp #(%1 %2 y-rank) x-rank 

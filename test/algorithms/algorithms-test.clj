@@ -69,5 +69,13 @@
 (t/deftest min-cut-test
   (t/is (= (sut/min-cut (get-graph "kargerMinCut.txt")) 5)))
 
-(t/deftest find
-  (t/is (= 2 (sut/find []))))
+(t/deftest find-test
+  (t/is (= (sut/find-root [{"parent" 1} {"parent" 2} {"parent" 2}] 0)
+           [[{"parent" 2} {"parent" 2} {"parent" 2}] 2])))
+
+(t/deftest union-test
+  (t/is (= (sut/union [{"parent" 1 "rank" 0} {"parent" 1 "rank" 1}
+                       {"parent" 3 "rank" 0} {"parent" 3 "rank" 1}]
+                      0 2)
+           [{"parent" 1 "rank" 0} {"parent" 3 "rank" 2}
+            {"parent" 3 "rank" 0} {"parent" 3 "rank" 1}])))
