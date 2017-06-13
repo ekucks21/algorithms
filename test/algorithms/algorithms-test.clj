@@ -79,3 +79,7 @@
                       0 2)
            [{"parent" 1 "rank" 0} {"parent" 3 "rank" 2}
             {"parent" 3 "rank" 0} {"parent" 3 "rank" 1}])))
+
+(t/deftest g->edges
+  (t/is (= (sut/g->edges [(0 2 4) (1 2) (2 0 1) (3 4) (4 0 3)])
+           #{#{0 2} #{0 4} #{1 2} #{3 4}})))

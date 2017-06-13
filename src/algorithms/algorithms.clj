@@ -124,28 +124,34 @@
 ;;                (update contracted-vertex dissoc contracted-vertex)
 ;;                (dissoc vertex-to-remove))))
 
-(defn union [subsets x y]
-  (let [x-root (find-root subsets x)
-        y-root (find-root subsets y)
-        x-rank (get-in subsets [x-root "rank"])
-        y-rank (get-in subsets [y-root "rank"])]
-    (condp #(%1 %2 y-rank) x-rank 
-      < (assoc-in subsets [x-root "parent"] y-root)
-      > (assoc-in subsets [y-root "parent"] x-root)
-      (-> subsets
-          (assoc-in [x-root "parent"] y-root)
-          (update-in [x-root "rank"] inc)))))
-
 (defn find-root [subsets i]
   (let [[root :as parents] (rseq
-                            (into [] (cons i
-                                           (into [] (comp
-                                                     (take-while (partial apply not=))
-                                                     (map second))
-                                                 (partition 2 1 (iterate #((subsets %) "parent") i))))))
+                            (into []
+                                  (cons i
+                                        (into [] (comp
+                                                  (take-while (partial apply not=))
+                                                  (map second))
+                                              (partition 2 1 (iterate #((subsets %) "parent") i))))))
         compressed-subsets (reduce #(update-in %1 [%2 "parent"] (fn [parent] root))
                                    subsets parents)]
     [compressed-subsets root]))
+
+(defn union [subsets x y]
+  (let [[compressed-subsets [x-root y-root]] ((juxt (comp first last) (partial map second))
+                                              (rest (reductions
+                                                     (fn [[cs _] root] (find-root cs root))
+                                                     [subsets] [x y])))
+        x-rank (get-in compressed-subsets [x-root "rank"])
+        y-rank (get-in compressed-subsets [y-root "rank"])]
+    (condp #(%1 %2 y-rank) x-rank 
+      < (assoc-in compressed-subsets [x-root "parent"] y-root)
+      > (assoc-in compressed-subsets [y-root "parent"] x-root)
+      (-> compressed-subsets
+          (assoc-in [x-root "parent"] y-root)
+          (update-in [x-root "rank"] inc)))))
+
+(defn g->edges [g]
+  (apply concat (reduce (fn [[v & adjacent]] (map #(#{v %}) adjacent)) g)))
 
 (defn random-contract-min-cut [g]
   (loop [g g]
