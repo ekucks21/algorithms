@@ -151,13 +151,15 @@
           (update-in [x-root "rank"] inc)))))
 
 (defn g->edges [g]
-  (apply concat (reduce (fn [[v & adjacent]] (map #(#{v %}) adjacent)) g)))
+  (into #{}
+        (apply concat (map (fn [[v & adjacent]]
+                             (map #(identity #{v %}) adjacent)) g))))
 
 (defn random-contract-min-cut [g]
   (loop [g g]
     (if (= 2 (count g))
-      g
-      ;; (recur (random-contract g))
+      recur
+      (g (random-contract g))
       )))
 
 (defn min-cut [g]

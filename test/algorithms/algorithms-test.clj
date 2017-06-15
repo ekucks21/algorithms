@@ -57,14 +57,8 @@
   (with-open [r (io/reader (io/resource file-name))]
     (let [ints (map #(map
                       (fn [s] (Integer/parseInt s))
-                      (s/split % #"\s+")) (line-seq r))
-          key-vals (apply concat
-                          (map (fn [[vertice & adjacent]]
-                                 [vertice
-                                  (apply hash-map
-                                         (interleave adjacent (repeat (count adjacent) 1)))])
-                               ints))]
-      (apply hash-map key-vals))))
+                      (s/split % #"\s+")) (line-seq r))]
+      (into [] ints))))
 
 (t/deftest min-cut-test
   (t/is (= (sut/min-cut (get-graph "kargerMinCut.txt")) 5)))
@@ -81,5 +75,5 @@
             {"parent" 3 "rank" 0} {"parent" 3 "rank" 1}])))
 
 (t/deftest g->edges
-  (t/is (= (sut/g->edges [(0 2 4) (1 2) (2 0 1) (3 4) (4 0 3)])
+  (t/is (= (sut/g->edges [[0 2 4] [1 2] [2 0 1] [3 4] [4 0 3]])
            #{#{0 2} #{0 4} #{1 2} #{3 4}})))
