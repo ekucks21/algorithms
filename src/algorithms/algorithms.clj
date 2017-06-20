@@ -155,21 +155,17 @@
         (apply concat (map (fn [[v & adjacent]]
                              (map #(identity #{v %}) adjacent)) g))))
 
-(defn random-contract-min-cut [g]
-  (loop [g g]
-    (if (= 2 (count g))
-      recur
-      (g (random-contract g))
-      )))
+(defn random-contract-min-cut [g edges n-vertices]
+  ( ))
 
 (defn min-cut [g]
   (let [n (count g)
+        edges (g->edges g)
         counter (atom 0)
         edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))]
     (apply min (repeatedly (* (* n n) (Math/log n))
                 #(do
                    (println (swap! counter inc))
-                   (let [contracted-g (random-contract-min-cut g)
+                   (let [contracted-g (random-contract-min-cut g edges n)
                          a-min-cut (first (vals (first (vals contracted-g))))]
-                     a-min-cut
-                     ))))))
+                     a-min-cut))))))
