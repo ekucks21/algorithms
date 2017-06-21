@@ -155,17 +155,25 @@
         (apply concat (map (fn [[v & adjacent]]
                              (map #(identity #{v %}) adjacent)) g))))
 
-(defn random-contract-min-cut [g edges n-vertices]
-  ( ))
+(defn random-contract-min-cut [g edges total-vertices subsets]
+  (let [n-edges (count edges)]
+    (iterate (fn [[contracted-subsets n-vertices]]
+               (let [[vertex1 vertex2] (edges (rand n-edges))
+                     [contracted-subsets2 subset1] (find-root contracted-subsets vertex1)
+                     [contracted-subsets3 subset2] (find-root)]))
+             [subsets total-vertices])))
 
 (defn min-cut [g]
   (let [n (count g)
+        subsets (into [] (map #(identity #{"parent" % "rank" 0}))
+                      (range n-vertices))
         edges (g->edges g)
         counter (atom 0)
         edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))]
     (apply min (repeatedly (* (* n n) (Math/log n))
                 #(do
                    (println (swap! counter inc))
-                   (let [contracted-g (random-contract-min-cut g edges n)
+                   (let [contracted-g
+                         (random-contract-min-cut g edges n subsets)
                          a-min-cut (first (vals (first (vals contracted-g))))]
                      a-min-cut))))))
