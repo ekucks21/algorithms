@@ -156,12 +156,21 @@
                              (map #(identity #{v %}) adjacent)) g))))
 
 (defn random-contract-min-cut [g edges total-vertices subsets]
-  (let [n-edges (count edges)]
-    (iterate (fn [[contracted-subsets n-vertices]]
-               (let [[vertex1 vertex2] (edges (rand n-edges))
-                     [contracted-subsets2 subset1] (find-root contracted-subsets vertex1)
-                     [contracted-subsets3 subset2] (find-root)]))
-             [subsets total-vertices])))
+  (let [n-edges (count edges)
+        [contracted-subsets _]
+        (first
+         (filter
+          (comp (partial = 2) second)
+          (iterate
+           (fn [[contracted-subsets n-vertices]]
+             (let [[vertex1 vertex2] (edges (rand n-edges))
+                   [contracted-subsets2 subset1] (find-root contracted-subsets vertex1)
+                   [contracted-subsets3 subset2] (find-root contracted-subsets2 vertex2)]
+               (if (= subset1 subset2)
+                 [contracted-subsets3 n-vertices]
+                 [(union contracted-subsets3 vertex1 vertex2) (dec n-vertices)])))
+           [subsets total-vertices])))]
+    ))
 
 (defn min-cut [g]
   (let [n (count g)
