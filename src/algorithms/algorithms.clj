@@ -164,7 +164,7 @@
           (comp (partial = 2) second)
           (iterate
            (fn [[contracted-subsets n-vertices]]
-             (let [[vertex1 vertex2] (edges (int (rand n-edges)))
+             (let [[vertex1 vertex2] (map dec (edges (int (rand n-edges))))
                    [contracted-subsets2 subset1] (find-root contracted-subsets vertex1)
                    [contracted-subsets3 subset2] (find-root contracted-subsets2 vertex2)]
                (if (= subset1 subset2)
