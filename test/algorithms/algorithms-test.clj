@@ -56,7 +56,7 @@
 (defn get-graph [file-name]
   (with-open [r (io/reader (io/resource file-name))]
     (let [ints (map #(map
-                      (fn [s] (Integer/parseInt s))
+                      (fn [s] (dec (Integer/parseInt s)))
                       (s/split % #"\s+")) (line-seq r))]
       (into [] ints))))
 
@@ -65,8 +65,8 @@
 
 (t/deftest min-cut-small-test
   (t/is (= (sut/min-cut (get-graph "smallKargerMinCut2.txt")) 2))
-  (t/is (= (sut/min-cut (get-graph "smallKargerMinCut2.txt")) 3))
-  (t/is (= (sut/min-cut (get-graph "smallKargerMinCut2.txt")) 4)))
+  (t/is (= (sut/min-cut (get-graph "smallKargerMinCut3.txt")) 3))
+  (t/is (= (sut/min-cut (get-graph "smallKargerMinCut4.txt")) 1)))
 
 (t/deftest find-test
   (t/is (= (sut/find-root [{"parent" 1} {"parent" 2} {"parent" 2}] 0)

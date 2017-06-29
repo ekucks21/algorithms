@@ -164,16 +164,18 @@
           (comp (partial = 2) second)
           (iterate
            (fn [[contracted-subsets n-vertices]]
-             (let [[vertex1 vertex2] (map dec (edges (int (rand n-edges))))
+             (let [[vertex1 vertex2] (edges (int (rand n-edges)))
                    [contracted-subsets2 subset1] (find-root contracted-subsets vertex1)
                    [contracted-subsets3 subset2] (find-root contracted-subsets2 vertex2)]
                (if (= subset1 subset2)
                  [contracted-subsets3 n-vertices]
                  [(union contracted-subsets3 vertex1 vertex2) (dec n-vertices)])))
            [subsets total-vertices])))
-        cutedges (count (filter (partial apply =)
-                                (map (fn [v1 v2] [(find-root contracted-subsets v1)
-                                                  (find-root contracted-subsets v2)]) edges)))]))
+        cutedges (count (filter (partial apply not=)
+                                (map (fn [[v1 v2]]
+                                       [(second (find-root contracted-subsets v1))
+                                        (second (find-root contracted-subsets v2))]) edges)))]
+    cutedges))
 
 (defn min-cut [g]
   (let [n (count g)
@@ -186,7 +188,4 @@
     (apply min (repeatedly (* (* n n) (Math/log n))
                 #(do
                    (println (swap! counter inc))
-                   (let [contracted-g
-                         (random-contract-min-cut g edges n subsets)
-                         a-min-cut (first (vals (first (vals contracted-g))))]
-                     a-min-cut))))))
+                   (random-contract-min-cut g edges n subsets))))))
