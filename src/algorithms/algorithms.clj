@@ -126,13 +126,15 @@
 
 (defn find-root [subsets i]
   (let [[root :as parents]
-        (rseq
-         (into []
-               (cons i
-                     (into [] (comp
-                               (take-while (partial apply not=))
-                               (map second))
-                           (partition 2 1 (iterate #((subsets %) "parent") i))))))
+        (loop [parent (int i)]
+          ()
+          ;; (into []
+          ;;       (cons i
+          ;;             (into [] (comp
+          ;;                       (take-while (partial apply not=))
+          ;;                       (map second))
+          ;;                   (partition 2 1 (iterate #((subsets %) "parent") i)))))
+          )
         compressed-subsets (reduce #(update-in %1 [%2 "parent"] (fn [parent] root))
                                    subsets parents)]
     [compressed-subsets root]))
@@ -185,7 +187,7 @@
         counter (atom 0)
         ;; edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))
         ]
-    (apply min (repeatedly (* (* n n) (Math/log n))
+    (apply min (repeatedly 1 ;; (* (* n n) (Math/log n))
                 #(do
-                   (println (swap! counter inc))
+                   ;; (println (swap! counter inc))
                    (random-contract-min-cut g edges n subsets))))))
