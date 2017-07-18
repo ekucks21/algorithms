@@ -55,10 +55,10 @@
 
 (defn get-graph [file-name]
   (with-open [r (io/reader (io/resource file-name))]
-    (let [ints (map #(map
-                      (fn [s] (dec (Integer/parseInt s)))
-                      (s/split % #"\s+")) (line-seq r))]
-      (into [] ints))))
+    (let [ints (int-array (map #(map
+                       (fn [s] (dec (Integer/parseInt s)))
+                       (s/split % #"\s+")) (line-seq r)))]
+      ints)))
 
 (t/deftest min-cut-test
   (t/is (= (sut/min-cut (get-graph "kargerMinCut.txt")) 5)))
