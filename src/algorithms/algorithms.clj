@@ -124,22 +124,21 @@
 ;;                (update contracted-vertex dissoc contracted-vertex)
 ;;                (dissoc vertex-to-remove))))
 
-(defn find-root [subsets i]
-  (let [[root :as parents]
-        (loop [parent (int i)]
-          ()
-          ;; (into []
-          ;;       (cons i
-          ;;             (into [] (comp
-          ;;                       (take-while (partial apply not=))
-          ;;                       (map second))
-          ;;                   (partition 2 1 (iterate #((subsets %) "parent") i)))))
-          )
-        compressed-subsets (reduce #(update-in %1 [%2 "parent"] (fn [parent] root))
-                                   subsets parents)]
-    [compressed-subsets root]))
+(defn find-root [^longs subsets ^long i]
+  (loop [i i _ subsets]
+    (let [parent (get (aget subsets i) "parent")]
+      (if (= parent i)
+        parent
+        (recur parent (aset subsets i (assoc (aget subsets i) "parent")))))
+    ;; (into []
+    ;;       (cons i
+    ;;             (into [] (comp
+    ;;                       (take-while (partial apply not=))
+    ;;                       (map second))
+    ;;                   (partition 2 1 (iterate #((subsets %) "parent") i)))))
+    ))
 
-(defn union [subsets x y]
+(defn union [^longs subsets ^long x ^long y]
   (let [[compressed-subsets [x-root y-root]] ((juxt (comp first last) (partial map second))
                                               (rest (reductions
                                                      (fn [[cs _] root] (find-root cs root))
@@ -181,8 +180,8 @@
 
 (defn min-cut [g]
   (let [n (count g)
-        subsets (into [] (map #(identity {"parent" % "rank" 0}))
-                      (range n))
+        subsets (int-array (into [] (map #(identity {"parent" % "rank" 0}))
+                       (range n)))
         edges (g->edges g)
         counter (atom 0)
         ;; edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))

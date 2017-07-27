@@ -55,9 +55,10 @@
 
 (defn get-graph [file-name]
   (with-open [r (io/reader (io/resource file-name))]
-    (let [ints (int-array (map #(map
-                       (fn [s] (dec (Integer/parseInt s)))
-                       (s/split % #"\s+")) (line-seq r)))]
+    (let [ints (map #(int-array (map
+                                 (fn [s] (dec (Integer/parseInt s)))
+                                 (s/split % #"\s+")))
+                    (line-seq r))]
       ints)))
 
 (t/deftest min-cut-test
