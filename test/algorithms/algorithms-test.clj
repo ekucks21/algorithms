@@ -59,7 +59,7 @@
                                  (fn [s] (dec (Integer/parseInt s)))
                                  (s/split % #"\s+")))
                     (line-seq r))]
-      ints)))
+      (into [] ints))))
 
 (t/deftest min-cut-test
   (t/is (= (sut/min-cut (get-graph "kargerMinCut.txt")) 5)))

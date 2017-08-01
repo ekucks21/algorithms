@@ -155,22 +155,32 @@
 (defn g->edges [g]
   (into []
         (map vec (distinct (apply concat (map (fn [[v & adjacent]]
-                                        (map #(identity #{v %}) adjacent)) g))))))
+                                                (map #(identity #{v %}) adjacent)) g))))))
 
-(defn random-contract-min-cut [g edges total-vertices subsets]
+(defn count-cut-edges [^longs subsets edges]
+  (loop [^long i 0 ^long cut-edges 0]
+    (if (< i (count edges))
+      (let [[v1 v2] edges
+            subset1 (find-root subsets v1)
+            subset2 (find-root subsets v2)]
+        (recur (inc i) (if (not= subset1 subset2) (inc cut-edges) cut-edges)))
+      cut-edges)))
+
+(defn random-contract-min-cut [g edges total-vertices ^longs subsets]
   (let [n-edges (count edges)
         [contracted-subsets _]
+        (loop [^long n-vertices total-vertices]
+          (if (= total-vertices 2)
+            (let [[vertex1 vertex2] (edges (int (rand n-edges)))
+                  subset1 (find-root contracted-subsets vertex1)
+                  subset2 (find-root contracted-subsets2 vertex2)]
+              (recur (if (= subset1 subset2) n-vertices (dec n-vertices))))))
         (first
          (filter
           (comp (partial = 2) second)
           (iterate
            (fn [[contracted-subsets n-vertices]]
-             (let [[vertex1 vertex2] (edges (int (rand n-edges)))
-                   [contracted-subsets2 subset1] (find-root contracted-subsets vertex1)
-                   [contracted-subsets3 subset2] (find-root contracted-subsets2 vertex2)]
-               (if (= subset1 subset2)
-                 [contracted-subsets3 n-vertices]
-                 [(union contracted-subsets3 vertex1 vertex2) (dec n-vertices)])))
+             )
            [subsets total-vertices])))
         cutedges (count (filter (partial apply not=)
                                 (map (fn [[v1 v2]]
@@ -180,8 +190,8 @@
 
 (defn min-cut [g]
   (let [n (count g)
-        subsets (int-array (into [] (map #(identity {"parent" % "rank" 0}))
-                       (range n)))
+        subsets (into [] (map #(identity {"parent" % "rank" 0}))
+                      (range n))
         edges (g->edges g)
         counter (atom 0)
         ;; edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))
