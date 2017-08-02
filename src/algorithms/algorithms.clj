@@ -158,7 +158,7 @@
                                                 (map #(identity #{v %}) adjacent)) g))))))
 
 (defn count-cut-edges [^longs subsets edges]
-  (loop [^long i 0 ^long cut-edges 0]
+  (loop [i (long 0) cut-edges (long 0)]
     (if (< i (count edges))
       (let [[v1 v2] edges
             subset1 (find-root subsets v1)
@@ -168,25 +168,14 @@
 
 (defn random-contract-min-cut [g edges total-vertices ^longs subsets]
   (let [n-edges (count edges)
-        [contracted-subsets _]
-        (loop [^long n-vertices total-vertices]
-          (if (= total-vertices 2)
-            (let [[vertex1 vertex2] (edges (int (rand n-edges)))
-                  subset1 (find-root contracted-subsets vertex1)
-                  subset2 (find-root contracted-subsets2 vertex2)]
-              (recur (if (= subset1 subset2) n-vertices (dec n-vertices))))))
-        (first
-         (filter
-          (comp (partial = 2) second)
-          (iterate
-           (fn [[contracted-subsets n-vertices]]
-             )
-           [subsets total-vertices])))
-        cutedges (count (filter (partial apply not=)
-                                (map (fn [[v1 v2]]
-                                       [(second (find-root contracted-subsets v1))
-                                        (second (find-root contracted-subsets v2))]) edges)))]
-    cutedges))
+        
+     (loop [^long n-vertices total-vertices]
+       (if (= total-vertices 2)
+         (let [[vertex1 vertex2] (edges (int (rand n-edges)))
+               subset1 (find-root subsets vertex1)
+               subset2 (find-root subsets vertex2)]
+           (recur (if (= subset1 subset2) n-vertices (dec n-vertices))))))]
+    (count-cut-edges subsets)))
 
 (defn min-cut [g]
   (let [n (count g)
