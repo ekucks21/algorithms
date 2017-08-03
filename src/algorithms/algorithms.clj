@@ -124,21 +124,16 @@
 ;;                (update contracted-vertex dissoc contracted-vertex)
 ;;                (dissoc vertex-to-remove))))
 
-(defn find-root [^longs subsets ^long i]
-  (loop [i i _ subsets]
+(defn find-root [subsets i]
+  (loop [i i]
     (let [parent (get (aget subsets i) "parent")]
       (if (= parent i)
         parent
-        (recur parent (aset subsets i (assoc (aget subsets i) "parent")))))
-    ;; (into []
-    ;;       (cons i
-    ;;             (into [] (comp
-    ;;                       (take-while (partial apply not=))
-    ;;                       (map second))
-    ;;                   (partition 2 1 (iterate #((subsets %) "parent") i)))))
-    ))
+        (do
+          (aset subsets i (assoc (aget subsets i) "parent" parent))
+          (recur parent))))))
 
-(defn union [^longs subsets ^long x ^long y]
+(defn union [subsets ^long x ^long y]
   (let [[compressed-subsets [x-root y-root]] ((juxt (comp first last) (partial map second))
                                               (rest (reductions
                                                      (fn [[cs _] root] (find-root cs root))
@@ -157,25 +152,25 @@
         (map vec (distinct (apply concat (map (fn [[v & adjacent]]
                                                 (map #(identity #{v %}) adjacent)) g))))))
 
-(defn count-cut-edges [^longs subsets edges]
+(defn count-cut-edges [subsets edges]
   (loop [i (long 0) cut-edges (long 0)]
     (if (< i (count edges))
       (let [[v1 v2] edges
             subset1 (find-root subsets v1)
             subset2 (find-root subsets v2)]
-        (recur (inc i) (if (not= subset1 subset2) (inc cut-edges) cut-edges)))
+        (recur (inc i) (if (not= subset1 subset2) (inc cut-edges) cut-edges))) 
       cut-edges)))
 
-(defn random-contract-min-cut [g edges total-vertices ^longs subsets]
-  (let [n-edges (count edges)
-        
+(defn random-contract-min-cut [g edges total-vertices subsets]
+  (let [n-edges (count edges)]
+    (do
      (loop [^long n-vertices total-vertices]
        (if (= total-vertices 2)
          (let [[vertex1 vertex2] (edges (int (rand n-edges)))
                subset1 (find-root subsets vertex1)
                subset2 (find-root subsets vertex2)]
-           (recur (if (= subset1 subset2) n-vertices (dec n-vertices))))))]
-    (count-cut-edges subsets)))
+           (recur (if (= subset1 subset2) n-vertices (dec n-vertices))))))
+     (count-cut-edges subsets edges))))
 
 (defn min-cut [g]
   (let [n (count g)
