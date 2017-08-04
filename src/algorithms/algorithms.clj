@@ -126,12 +126,11 @@
 
 (defn find-root [subsets i]
   (loop [i i]
-    (let [parent (get (aget subsets i) "parent")]
+    (let [parent ((subsets i) "parent")]
       (if (= parent i)
         parent
-        (do
-          (aset subsets i (assoc (aget subsets i) "parent" parent))
-          (recur parent))))))
+        (do (assoc! subsets i (assoc (subsets i) "parent" parent))
+            (recur parent))))))
 
 (defn union [subsets ^long x ^long y]
   (let [[compressed-subsets [x-root y-root]] ((juxt (comp first last) (partial map second))
@@ -174,8 +173,8 @@
 
 (defn min-cut [g]
   (let [n (count g)
-        subsets (into [] (map #(identity {"parent" % "rank" 0}))
-                      (range n))
+        subsets (transient (into [] (map #(identity {"parent" % "rank" 0}))
+                       (range n)))
         edges (g->edges g)
         counter (atom 0)
         ;; edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))
