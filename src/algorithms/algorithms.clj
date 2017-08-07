@@ -161,20 +161,21 @@
       cut-edges)))
 
 (defn random-contract-min-cut [g edges total-vertices subsets]
-  (let [n-edges (count edges)]
+  (let [n-edges (count edges)
+        t-subsets (transient subsets)]
     (do
      (loop [^long n-vertices total-vertices]
        (if (= total-vertices 2)
          (let [[vertex1 vertex2] (edges (int (rand n-edges)))
-               subset1 (find-root subsets vertex1)
-               subset2 (find-root subsets vertex2)]
-           (recur (if (= subset1 subset2) n-vertices (dec n-vertices))))))
-     (count-cut-edges subsets edges))))
+               subset1 (find-root t-subsets vertex1)
+               subset2 (find-root t-subsets vertex2)] 
+           (do (recur (if (= subset1 subset2) n-vertices (do (union t-subsets vertex1 vertex2) (dec n-vertices))))))
+       (count-cut-edges t-subsets edges)))))))
 
 (defn min-cut [g]
   (let [n (count g)
-        subsets (transient (into [] (map #(identity {"parent" % "rank" 0}))
-                       (range n)))
+        subsets (into [] (map #(identity {"parent" % "rank" 0}))
+                      (range n))
         edges (g->edges g)
         counter (atom 0)
         ;; edges (apply concat (map (fn [[key value]] (map #(vector key %) value)) g))
